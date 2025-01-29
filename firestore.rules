@@ -1,0 +1,50 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+  	function isAdmin() {
+      return request.auth != null && 
+             get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
+    }
+    
+     match /users/{userId} {
+      // Allow admins to create new users
+      allow create: if isAdmin();
+      // Allow users to read their own profile and admins to read all
+      allow read: if request.auth != null && (request.auth.uid == userId || isAdmin());
+      // Allow admins to update/delete users
+      allow update, delete: if isAdmin();
+    }
+    
+    match /employeeLeave/{userId}{
+    	// Allow users to read their own profile and admins to read all
+      allow read, write, update: if request.auth != null && (request.auth.uid == userId || isAdmin());
+    }
+    
+    match /config/{document=**}{
+    	allow read: if request.auth != null;
+    }
+    
+    match /projects/{projectId}{
+    	allow read: if request.auth != null;
+    }
+    
+    match /clients/{document=**}{
+    	allow read: if request.auth != null;
+    }
+
+    match /timeEntries/{timeEntryId}{
+    	allow read, update, delete: if request.auth != null && request.auth.uid == resource.data.userId;
+      allow create;
+    }
+    
+    match /approvals/{approvalId}{
+    	allow read, update: if request.auth != null && request.auth.uid == resource.data.userId;
+      allow create;
+    }
+
+    // Allow admins full access to all collections needed for test data
+    match /{collection}/{document=**} {
+      allow read, write, create, delete: if isAdmin();
+    }
+  }
+}

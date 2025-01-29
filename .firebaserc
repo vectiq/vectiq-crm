@@ -1,0 +1,15 @@
+{
+  "projects": {
+    "default": "vectiq-timesheet"
+  },
+  "targets": {
+    "vectiq-timesheet": {
+      "hosting": {
+        "vectiq-crm": [
+          "vectiq-crm-dp90"
+        ]
+      }
+    }
+  },
+  "etags": {}
+}
