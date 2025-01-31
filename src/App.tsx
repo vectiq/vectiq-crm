@@ -8,6 +8,7 @@ import { RoleProtectedRoute } from '@/components/auth/RoleProtectedRoute';
 import { Layout } from '@/components/layout/Layout';
 import Login from '@/pages/Login';
 import Clients from '@/pages/Clients';
+import CandidateDetail from '@/pages/CandidateDetail';
 import LeadDetail from '@/pages/LeadDetail';
 import OpportunityDetail from '@/pages/OpportunityDetail';
 import Candidates from '@/pages/Candidates';
@@ -102,6 +103,14 @@ export default function App() {
               element={
                 <RoleProtectedRoute allowedRoles={['admin']}>
                   <Candidates />
+                </RoleProtectedRoute>
+              }
+            />
+            <Route
+              path="candidates/:id"
+              element={
+                <RoleProtectedRoute allowedRoles={['admin']}>
+                  <CandidateDetail />
                 </RoleProtectedRoute>
               }
             />

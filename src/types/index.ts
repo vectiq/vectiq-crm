@@ -117,6 +117,7 @@ export interface Interaction {
   userId: string;
   leadId?: string;
   opportunityId?: string;
+  candidateId?: string;
   createdAt: any;
   updatedAt: any;
 }

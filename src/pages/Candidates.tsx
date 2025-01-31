@@ -92,7 +92,11 @@ export default function Candidates() {
               const opportunity = opportunities.find(o => o.id === candidate.opportunityId);
               
               return (
-                <tr key={candidate.id} className="group hover:bg-gray-50 cursor-pointer">
+                <tr 
+                  key={candidate.id} 
+                  className="group hover:bg-gray-50 cursor-pointer"
+                  onClick={() => navigate(`/candidates/${candidate.id}`)}
+                >
                   <Td className="font-medium">{candidate.name}</Td>
                   <Td>
                     <div className="space-y-1">

@@ -37,7 +37,9 @@ export function InteractionTimeline({ interactions, onAddInteraction }: Interact
       </div>
 
       <ul role="list" className="-mb-8">
-        {interactions.map((interaction, idx) => {
+        {[...interactions].sort((a, b) => 
+          new Date(b.date).getTime() - new Date(a.date).getTime()
+        ).map((interaction, idx) => {
           const Icon = interactionIcons[interaction.type];
           const colorClass = interactionColors[interaction.type];
           const user = users.find(u => u.id === interaction.userId);

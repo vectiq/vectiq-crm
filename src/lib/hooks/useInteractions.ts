@@ -6,7 +6,7 @@ import {
 } from '@/lib/services/interactions';
 import type { Interaction } from '@/types';
 
-export function useInteractions(filters: { leadId?: string; opportunityId?: string }) {
+export function useInteractions(filters: { leadId?: string; opportunityId?: string; candidateId?: string }) {
   const queryClient = useQueryClient();
   const queryKey = ['interactions', filters];
 
@@ -14,7 +14,6 @@ export function useInteractions(filters: { leadId?: string; opportunityId?: stri
     queryKey,
     queryFn: () => getInteractions(filters)
   });
-
   const createMutation = useMutation({
     mutationFn: createInteraction,
     onSuccess: () => {

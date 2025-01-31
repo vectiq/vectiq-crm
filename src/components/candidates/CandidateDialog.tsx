@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/Button';
 import { FormField } from '@/components/ui/FormField';
 import { Input } from '@/components/ui/Input';
 import { Select, SelectTrigger, SelectContent, SelectItem } from '@/components/ui/Select';
+import { TagInput } from '@/components/ui/TagInput';
 import { UserPlus } from 'lucide-react';
 import { useUsers } from '@/lib/hooks/useUsers'; 
 import { useCandidates } from '@/lib/hooks/useCandidates';
@@ -251,26 +252,15 @@ export function CandidateDialog({
             </FormField>
 
             <FormField label="Skills">
-              <div className="space-y-2">
-                {commonSkills.map(skill => (
-                  <label key={skill} className="flex items-center gap-2">
-                    <input
-                      type="checkbox"
-                      checked={watch('skills')?.includes(skill)}
-                      onChange={(e) => {
-                        const currentSkills = watch('skills') || [];
-                        if (e.target.checked) {
-                          setValue('skills', [...currentSkills, skill]);
-                        } else {
-                          setValue('skills', currentSkills.filter(s => s !== skill));
-                        }
-                      }}
-                      className="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
-                    />
-                    <span className="text-sm text-gray-700">{skill}</span>
-                  </label>
-                ))}
-              </div>
+              <TagInput
+                value={watch('skills') || []}
+                onChange={(skills) => setValue('skills', skills)}
+                suggestions={commonSkills}
+                placeholder="Add skills..."
+              />
+              <p className="mt-1 text-xs text-gray-500">
+                Type custom skills or select from suggestions
+              </p>
             </FormField>
 
             <FormField label="Assigned To">
