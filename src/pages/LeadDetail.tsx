@@ -1,34 +1,44 @@
-import { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
-import { useLeads } from '@/lib/hooks/useLeads';
-import { useUsers } from '@/lib/hooks/useUsers';
-import { useInteractions } from '@/lib/hooks/useInteractions';
-import { Card } from '@/components/ui/Card';
-import { Button } from '@/components/ui/Button';
-import { Badge } from '@/components/ui/Badge';
-import { FormField } from '@/components/ui/FormField';
-import { Input } from '@/components/ui/Input';
-import { Select, SelectTrigger, SelectContent, SelectItem } from '@/components/ui/Select';
-import { InteractionTimeline } from '@/components/interactions/InteractionTimeline';
-import { InteractionDialog } from '@/components/interactions/InteractionDialog';
-import { LoadingScreen } from '@/components/ui/LoadingScreen';
-import { ArrowLeft, Mail, Phone, Target } from 'lucide-react';
-import type { Lead, LeadStatus, InteractionType } from '@/types';
+import { useState, useEffect } from "react";
+import { useParams, useNavigate } from "react-router-dom";
+import { useLeads } from "@/lib/hooks/useLeads";
+import { useUsers } from "@/lib/hooks/useUsers";
+import { useInteractions } from "@/lib/hooks/useInteractions";
+import { Card } from "@/components/ui/Card";
+import { Button } from "@/components/ui/Button";
+import { Badge } from "@/components/ui/Badge";
+import { FormField } from "@/components/ui/FormField";
+import { Input } from "@/components/ui/Input";
+import {
+  Select,
+  SelectTrigger,
+  SelectContent,
+  SelectItem,
+} from "@/components/ui/Select";
+import { InteractionTimeline } from "@/components/interactions/InteractionTimeline";
+import { InteractionDialog } from "@/components/interactions/InteractionDialog";
+import { LoadingScreen } from "@/components/ui/LoadingScreen";
+import { ArrowLeft, Mail, Phone, Target } from "lucide-react";
+import type { Lead, LeadStatus, InteractionType } from "@/types";
+import { AttachmentUpload } from "@/components/ui/AttachmentUpload";
 
 const leadSources = [
-  'Website',
-  'Referral',
-  'Cold Call',
-  'LinkedIn',
-  'Conference',
-  'Other'
+  "Website",
+  "Referral",
+  "Cold Call",
+  "LinkedIn",
+  "Conference",
+  "Other",
 ];
 
-const leadStatuses: { value: LeadStatus; label: string; variant: 'default' | 'secondary' | 'success' | 'warning' | 'destructive' }[] = [
-  { value: 'new', label: 'New', variant: 'secondary' },
-  { value: 'contacted', label: 'Contacted', variant: 'warning' },
-  { value: 'qualified', label: 'Qualified', variant: 'success' },
-  { value: 'unqualified', label: 'Unqualified', variant: 'destructive' }
+const leadStatuses: {
+  value: LeadStatus;
+  label: string;
+  variant: "default" | "secondary" | "success" | "warning" | "destructive";
+}[] = [
+  { value: "new", label: "New", variant: "secondary" },
+  { value: "contacted", label: "Contacted", variant: "warning" },
+  { value: "qualified", label: "Qualified", variant: "success" },
+  { value: "unqualified", label: "Unqualified", variant: "destructive" },
 ];
 
 export default function LeadDetail() {
@@ -39,17 +49,17 @@ export default function LeadDetail() {
   const [isInteractionDialogOpen, setIsInteractionDialogOpen] = useState(false);
   const { interactions, createInteraction } = useInteractions({ leadId: id });
   const [formData, setFormData] = useState({
-    companyName: '',
-    contactName: '',
-    email: '',
-    phone: '',
-    status: 'new' as LeadStatus,
-    source: '',
-    notes: '',
-    assignedTo: ''
+    companyName: "",
+    contactName: "",
+    email: "",
+    phone: "",
+    status: "new" as LeadStatus,
+    source: "",
+    notes: "",
+    assignedTo: "",
   });
 
-  const lead = leads.find(l => l.id === id);
+  const lead = leads.find((l) => l.id === id);
 
   useEffect(() => {
     if (lead) {
@@ -57,11 +67,11 @@ export default function LeadDetail() {
         companyName: lead.companyName,
         contactName: lead.contactName,
         email: lead.email,
-        phone: lead.phone || '',
+        phone: lead.phone || "",
         status: lead.status,
         source: lead.source,
-        notes: lead.notes || '',
-        assignedTo: lead.assignedTo || ''
+        notes: lead.notes || "",
+        assignedTo: lead.assignedTo || "",
       });
     }
   }, [lead]);
@@ -69,11 +79,11 @@ export default function LeadDetail() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!id) return;
-    
+
     try {
       await updateLead(id, formData);
     } catch (error) {
-      console.error('Error saving lead:', error);
+      console.error("Error saving lead:", error);
     }
   };
 
@@ -84,7 +94,7 @@ export default function LeadDetail() {
     date: string;
   }) => {
     if (!id || !currentUser) return;
-    
+
     await createInteraction({
       ...data,
       userId: currentUser.id,
@@ -100,19 +110,23 @@ export default function LeadDetail() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-4">
-          <Button variant="secondary" onClick={() => navigate('/leads')}>
+          <Button variant="secondary" onClick={() => navigate("/leads")}>
             <ArrowLeft className="h-4 w-4 mr-2" />
             Back to Leads
           </Button>
           <div>
-            <h1 className="text-2xl font-semibold text-gray-900">{lead.companyName}</h1>
+            <h1 className="text-2xl font-semibold text-gray-900">
+              {lead.companyName}
+            </h1>
             <div className="flex items-center gap-2 mt-1">
-              <Badge variant={leadStatuses.find(s => s.value === lead.status)?.variant}>
-                {leadStatuses.find(s => s.value === lead.status)?.label}
+              <Badge
+                variant={
+                  leadStatuses.find((s) => s.value === lead.status)?.variant
+                }
+              >
+                {leadStatuses.find((s) => s.value === lead.status)?.label}
               </Badge>
-              {lead.source && (
-                <Badge variant="secondary">{lead.source}</Badge>
-              )}
+              {lead.source && <Badge variant="secondary">{lead.source}</Badge>}
             </div>
           </div>
         </div>
@@ -126,7 +140,12 @@ export default function LeadDetail() {
                 <FormField label="Company Name">
                   <Input
                     value={formData.companyName}
-                    onChange={(e) => setFormData(prev => ({ ...prev, companyName: e.target.value }))}
+                    onChange={(e) =>
+                      setFormData((prev) => ({
+                        ...prev,
+                        companyName: e.target.value,
+                      }))
+                    }
                     required
                   />
                 </FormField>
@@ -134,7 +153,12 @@ export default function LeadDetail() {
                 <FormField label="Contact Name">
                   <Input
                     value={formData.contactName}
-                    onChange={(e) => setFormData(prev => ({ ...prev, contactName: e.target.value }))}
+                    onChange={(e) =>
+                      setFormData((prev) => ({
+                        ...prev,
+                        contactName: e.target.value,
+                      }))
+                    }
                     required
                   />
                 </FormField>
@@ -144,7 +168,12 @@ export default function LeadDetail() {
                     <Input
                       type="email"
                       value={formData.email}
-                      onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
+                      onChange={(e) =>
+                        setFormData((prev) => ({
+                          ...prev,
+                          email: e.target.value,
+                        }))
+                      }
                       required
                     />
                   </FormField>
@@ -153,7 +182,12 @@ export default function LeadDetail() {
                     <Input
                       type="tel"
                       value={formData.phone}
-                      onChange={(e) => setFormData(prev => ({ ...prev, phone: e.target.value }))}
+                      onChange={(e) =>
+                        setFormData((prev) => ({
+                          ...prev,
+                          phone: e.target.value,
+                        }))
+                      }
                     />
                   </FormField>
                 </div>
@@ -162,13 +196,16 @@ export default function LeadDetail() {
                   <FormField label="Status">
                     <Select
                       value={formData.status}
-                      onValueChange={(value: LeadStatus) => setFormData(prev => ({ ...prev, status: value }))}
+                      onValueChange={(value: LeadStatus) =>
+                        setFormData((prev) => ({ ...prev, status: value }))
+                      }
                     >
                       <SelectTrigger>
-                        {leadStatuses.find(s => s.value === formData.status)?.label || 'Select Status'}
+                        {leadStatuses.find((s) => s.value === formData.status)
+                          ?.label || "Select Status"}
                       </SelectTrigger>
                       <SelectContent>
-                        {leadStatuses.map(status => (
+                        {leadStatuses.map((status) => (
                           <SelectItem key={status.value} value={status.value}>
                             {status.label}
                           </SelectItem>
@@ -180,13 +217,15 @@ export default function LeadDetail() {
                   <FormField label="Source">
                     <Select
                       value={formData.source}
-                      onValueChange={(value) => setFormData(prev => ({ ...prev, source: value }))}
+                      onValueChange={(value) =>
+                        setFormData((prev) => ({ ...prev, source: value }))
+                      }
                     >
                       <SelectTrigger>
-                        {formData.source || 'Select Source'}
+                        {formData.source || "Select Source"}
                       </SelectTrigger>
                       <SelectContent>
-                        {leadSources.map(source => (
+                        {leadSources.map((source) => (
                           <SelectItem key={source} value={source}>
                             {source}
                           </SelectItem>
@@ -199,13 +238,16 @@ export default function LeadDetail() {
                 <FormField label="Assigned To">
                   <Select
                     value={formData.assignedTo}
-                    onValueChange={(value) => setFormData(prev => ({ ...prev, assignedTo: value }))}
+                    onValueChange={(value) =>
+                      setFormData((prev) => ({ ...prev, assignedTo: value }))
+                    }
                   >
                     <SelectTrigger>
-                      {users.find(u => u.id === formData.assignedTo)?.name || 'Select User'}
+                      {users.find((u) => u.id === formData.assignedTo)?.name ||
+                        "Select User"}
                     </SelectTrigger>
                     <SelectContent>
-                      {users.map(user => (
+                      {users.map((user) => (
                         <SelectItem key={user.id} value={user.id}>
                           {user.name}
                         </SelectItem>
@@ -217,7 +259,12 @@ export default function LeadDetail() {
                 <FormField label="Notes">
                   <textarea
                     value={formData.notes}
-                    onChange={(e) => setFormData(prev => ({ ...prev, notes: e.target.value }))}
+                    onChange={(e) =>
+                      setFormData((prev) => ({
+                        ...prev,
+                        notes: e.target.value,
+                      }))
+                    }
                     className="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
                     rows={4}
                   />
@@ -225,9 +272,7 @@ export default function LeadDetail() {
               </div>
 
               <div className="flex justify-end">
-                <Button type="submit">
-                  Save Changes
-                </Button>
+                <Button type="submit">Save Changes</Button>
               </div>
             </form>
           </Card>
@@ -238,6 +283,29 @@ export default function LeadDetail() {
               onAddInteraction={() => setIsInteractionDialogOpen(true)}
             />
           </Card>
+
+          <FormField label="Attachments">
+            <AttachmentUpload
+              entityType="leads" // or "opportunities" or "candidates"
+              entityId={id}
+              attachments={formData.attachments}
+              uploadedBy={currentUser.id}
+              onUpload={(attachment) => {
+                setFormData((prev) => ({
+                  ...prev,
+                  attachments: [...(prev.attachments || []), attachment],
+                }));
+              }}
+              onDelete={(attachment) => {
+                setFormData((prev) => ({
+                  ...prev,
+                  attachments:
+                    prev.attachments?.filter((a) => a.id !== attachment.id) ||
+                    [],
+                }));
+              }}
+            />
+          </FormField>
         </div>
 
         <div className="space-y-6">

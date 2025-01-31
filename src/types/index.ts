@@ -73,6 +73,16 @@ export interface Project {
 
 export type LeadStatus = 'new' | 'contacted' | 'qualified' | 'unqualified';
 
+export interface Attachment {
+  id: string;
+  name: string;
+  size: number;
+  type: string;
+  url: string;
+  uploadedBy: string;
+  uploadedAt: any;
+}
+
 export interface Lead {
   id: string;
   companyName: string;
@@ -84,6 +94,7 @@ export interface Lead {
   notes?: string;
   assignedTo?: string;
   lastContactedAt?: string;
+  attachments?: Attachment[];
   createdAt: any;
   updatedAt: any;
 }
@@ -102,6 +113,7 @@ export interface Opportunity {
   assignedTo?: string;
   products?: string[];
   notes?: string;
+  attachments?: Attachment[];
   createdAt: any;
   updatedAt: any;
 }
@@ -118,6 +130,10 @@ export interface Interaction {
   leadId?: string;
   opportunityId?: string;
   candidateId?: string;
+  notes?: string;
+  opportunityId?: string;
+  assignedTo?: string;
+  attachments?: Attachment[];
   createdAt: any;
   updatedAt: any;
 }
@@ -139,6 +155,7 @@ export interface Candidate {
   notes?: string;
   opportunityId?: string;
   assignedTo?: string;
+  attachments?: Attachment[];
   createdAt: any;
   updatedAt: any;
 }
