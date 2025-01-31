@@ -70,3 +70,53 @@ export interface Project {
   isActive: boolean;
   tasks: ProjectTask[];
 }
+
+export type LeadStatus = 'new' | 'contacted' | 'qualified' | 'unqualified';
+
+export interface Lead {
+  id: string;
+  companyName: string;
+  contactName: string;
+  email: string;
+  phone?: string;
+  status: LeadStatus;
+  source: string;
+  notes?: string;
+  assignedTo?: string;
+  lastContactedAt?: string;
+  createdAt: any;
+  updatedAt: any;
+}
+
+export type OpportunityStage = 'discovery' | 'proposal' | 'negotiation' | 'closed_won' | 'closed_lost';
+
+export interface Opportunity {
+  id: string;
+  leadId?: string;
+  clientId?: string;
+  title: string;
+  value: number;
+  stage: OpportunityStage;
+  probability: number;
+  expectedCloseDate: string;
+  assignedTo?: string;
+  products?: string[];
+  notes?: string;
+  createdAt: any;
+  updatedAt: any;
+}
+
+export type InteractionType = 'email' | 'call' | 'meeting' | 'note';
+
+export interface Interaction {
+  id: string;
+  type: InteractionType;
+  title: string;
+  description: string;
+  date: string;
+  userId: string;
+  leadId?: string;
+  opportunityId?: string;
+  createdAt: any;
+  updatedAt: any;
+}

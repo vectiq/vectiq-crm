@@ -8,10 +8,15 @@ import { RoleProtectedRoute } from '@/components/auth/RoleProtectedRoute';
 import { Layout } from '@/components/layout/Layout';
 import Login from '@/pages/Login';
 import Clients from '@/pages/Clients';
+import LeadDetail from '@/pages/LeadDetail';
+import OpportunityDetail from '@/pages/OpportunityDetail';
+import Candidates from '@/pages/Candidates';
 import Users from '@/pages/Users';
 import Teams from '@/pages/Teams';
 import Admin from '@/pages/Admin';
 import Profile from '@/pages/Profile';
+import Leads from '@/pages/Leads';
+import Opportunities from '@/pages/Opportunities';
 
 const queryClient = new QueryClient()
 
@@ -60,6 +65,46 @@ export default function App() {
             }
           >
             <Route path="profile" element={<Profile />} />
+            <Route
+              path="leads"
+              element={
+                <RoleProtectedRoute allowedRoles={['admin']}>
+                  <Leads />
+                </RoleProtectedRoute>
+              }
+            />
+            <Route
+              path="leads/:id"
+              element={
+                <RoleProtectedRoute allowedRoles={['admin']}>
+                  <LeadDetail />
+                </RoleProtectedRoute>
+              }
+            />
+            <Route
+              path="opportunities"
+              element={
+                <RoleProtectedRoute allowedRoles={['admin']}>
+                  <Opportunities />
+                </RoleProtectedRoute>
+              }
+            />
+            <Route
+              path="opportunities/:id"
+              element={
+                <RoleProtectedRoute allowedRoles={['admin']}>
+                  <OpportunityDetail />
+                </RoleProtectedRoute>
+              }
+            />
+            <Route
+              path="candidates"
+              element={
+                <RoleProtectedRoute allowedRoles={['admin']}>
+                  <Candidates />
+                </RoleProtectedRoute>
+              }
+            />
             <Route
               path="clients"
               element={

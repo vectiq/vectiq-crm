@@ -4,7 +4,7 @@ import { cn } from '@/lib/utils/styles';
 export type BadgeVariant = 'default' | 'secondary' | 'success' | 'warning' | 'destructive';
 
 const badgeVariants = cva(
-  'inline-flex items-center rounded-full px-2 py-1 text-xs font-medium ring-1 ring-inset transition-all duration-200 hover:scale-105 hover:shadow-sm',
+  'inline-flex items-center rounded-full px-2 py-1 text-xs font-medium ring-1 ring-inset transition-all duration-200 hover:scale-105 hover:shadow-sm whitespace-nowrap',
   {
     variants: {
       variant: {
@@ -22,11 +22,14 @@ const badgeVariants = cva(
 );
 
 interface BadgeProps
-  extends React.HTMLAttributes<HTMLDivElement>,
+  extends React.HTMLAttributes<HTMLSpanElement>,
     VariantProps<typeof badgeVariants> {}
 
 export function Badge({ className, variant, ...props }: BadgeProps) {
   return (
-    <div className={cn(badgeVariants({ variant }), className)} {...props} />
+    <span 
+      className={cn(badgeVariants({ variant }), className)} 
+      {...props} 
+    />
   );
 }
