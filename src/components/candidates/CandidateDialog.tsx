@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { SlidePanel } from '@/components/ui/SlidePanel';
 import { Button } from '@/components/ui/Button';
@@ -6,7 +6,8 @@ import { FormField } from '@/components/ui/FormField';
 import { Input } from '@/components/ui/Input';
 import { Select, SelectTrigger, SelectContent, SelectItem } from '@/components/ui/Select';
 import { UserPlus } from 'lucide-react';
-import { useUsers } from '@/lib/hooks/useUsers';
+import { useUsers } from '@/lib/hooks/useUsers'; 
+import { useCandidates } from '@/lib/hooks/useCandidates';
 import type { Candidate, CandidateStatus } from '@/types';
 
 const candidateStatuses: { value: CandidateStatus; label: string }[] = [
@@ -50,6 +51,9 @@ export function CandidateDialog({
   onSubmit,
 }: CandidateDialogProps) {
   const { users } = useUsers();
+  const { candidates: existingCandidates } = useCandidates();
+  const [isExistingCandidate, setIsExistingCandidate] = useState(false);
+  const [selectedExistingCandidate, setSelectedExistingCandidate] = useState<string>('');
   const { register, handleSubmit, watch, setValue, reset } = useForm({
     defaultValues: candidate || {
       name: '',
@@ -89,7 +93,16 @@ export function CandidateDialog({
   }, [open, candidate, opportunityId, reset]);
 
   const handleFormSubmit = async (data: any) => {
-    await onSubmit(data);
+    if (isExistingCandidate && selectedExistingCandidate) {
+      // Only update the opportunityId for the selected candidate
+      await onSubmit({
+        id: selectedExistingCandidate,
+        opportunityId: opportunityId || null
+      });
+    } else {
+      // For new candidates, submit all form data
+      await onSubmit(data);
+    }
     onOpenChange(false);
   };
 
@@ -97,130 +110,210 @@ export function CandidateDialog({
     <SlidePanel
       open={open}
       onClose={() => onOpenChange(false)}
-      title={candidate ? 'Edit Candidate' : 'New Candidate'}
+      title={candidate ? 'Edit Candidate' : isExistingCandidate ? 'Associate Existing Candidate' : 'New Candidate'}
       icon={<UserPlus className="h-5 w-5 text-indigo-500" />}
     >
-      <form onSubmit={handleSubmit(handleFormSubmit)} className="p-6 space-y-6">
-        <div className="space-y-4">
-          <FormField label="Name">
-            <Input {...register('name')} required />
-          </FormField>
-
-          <div className="grid grid-cols-2 gap-4">
-            <FormField label="Email">
-              <Input type="email" {...register('email')} required />
-            </FormField>
-
-            <FormField label="Phone">
-              <Input type="tel" {...register('phone')} />
-            </FormField>
+      {!candidate && (
+        <div className="p-6 border-b">
+          <div className="flex items-center gap-4">
+            <Button
+              type="button"
+              variant={!isExistingCandidate ? "primary" : "secondary"}
+              onClick={() => setIsExistingCandidate(false)}
+            >
+              Create New
+            </Button>
+            <Button
+              type="button"
+              variant={isExistingCandidate ? "primary" : "secondary"}
+              onClick={() => setIsExistingCandidate(true)}
+            >
+              Use Existing
+            </Button>
           </div>
+        </div>
+      )}
 
-          <FormField label="Status">
+      {isExistingCandidate && !candidate ? (
+        <div className="p-6">
+          <FormField label="Select Candidate">
             <Select
-              value={watch('status')}
-              onValueChange={(value: CandidateStatus) => setValue('status', value)}
+              value={selectedExistingCandidate}
+              onValueChange={(value) => {
+                setSelectedExistingCandidate(value);
+                const selected = existingCandidates.find(c => c.id === value);
+                if (selected) {
+                  const { id, createdAt, updatedAt, opportunityId: oldOpportunityId, ...rest } = selected;
+                  reset({
+                    ...rest,
+                    opportunityId: opportunityId || null
+                  });
+                }
+              }}
             >
               <SelectTrigger>
-                {candidateStatuses.find(s => s.value === watch('status'))?.label}
+                {existingCandidates.find(c => c.id === selectedExistingCandidate)?.name || 'Select Candidate'}
               </SelectTrigger>
               <SelectContent>
-                {candidateStatuses.map(status => (
-                  <SelectItem key={status.value} value={status.value}>
-                    {status.label}
-                  </SelectItem>
-                ))}
+                {existingCandidates
+                  .filter(c => !c.opportunityId) // Only show unassigned candidates
+                  .map(candidate => (
+                    <SelectItem key={candidate.id} value={candidate.id}>
+                      {candidate.name} - {candidate.currentRole || 'No role'}
+                    </SelectItem>
+                  ))}
+                  {existingCandidates.filter(c => !c.opportunityId).length === 0 && (
+                    <div className="p-2 text-sm text-gray-500 text-center">
+                      No available candidates
+                    </div>
+                  )}
               </SelectContent>
             </Select>
+            <p className="mt-1 text-xs text-gray-500">
+              Only showing candidates not currently assigned to any opportunity
+            </p>
           </FormField>
 
-          <div className="grid grid-cols-2 gap-4">
-            <FormField label="Current Role">
-              <Input {...register('currentRole')} />
-            </FormField>
-
-            <FormField label="Current Company">
-              <Input {...register('currentCompany')} />
-            </FormField>
+          <div className="flex justify-end gap-3 mt-6">
+            <Button
+              type="button"
+              variant="secondary"
+              onClick={() => onOpenChange(false)}
+            >
+              Cancel
+            </Button>
+            <Button
+              type="button"
+              disabled={!selectedExistingCandidate}
+              onClick={handleFormSubmit}
+            >
+              Associate Candidate
+            </Button>
           </div>
-
-          <div className="grid grid-cols-2 gap-4">
-            <FormField label="Expected Salary">
-              <Input type="number" {...register('expectedSalary')} />
+        </div>
+      ) : (
+        <form onSubmit={handleSubmit(handleFormSubmit)} className="p-6 space-y-6">
+          <div className="space-y-4">
+            <FormField label="Name">
+              <Input {...register('name')} required />
             </FormField>
 
-            <FormField label="Notice Period">
-              <Input {...register('noticePeriod')} placeholder="e.g., 2 weeks" />
-            </FormField>
-          </div>
+            <div className="grid grid-cols-2 gap-4">
+              <FormField label="Email">
+                <Input type="email" {...register('email')} required />
+              </FormField>
 
-          <FormField label="Resume URL">
-            <Input type="url" {...register('resumeUrl')} />
-          </FormField>
-
-          <FormField label="Skills">
-            <div className="space-y-2">
-              {commonSkills.map(skill => (
-                <label key={skill} className="flex items-center gap-2">
-                  <input
-                    type="checkbox"
-                    checked={watch('skills')?.includes(skill)}
-                    onChange={(e) => {
-                      const currentSkills = watch('skills') || [];
-                      if (e.target.checked) {
-                        setValue('skills', [...currentSkills, skill]);
-                      } else {
-                        setValue('skills', currentSkills.filter(s => s !== skill));
-                      }
-                    }}
-                    className="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
-                  />
-                  <span className="text-sm text-gray-700">{skill}</span>
-                </label>
-              ))}
+              <FormField label="Phone">
+                <Input type="tel" {...register('phone')} />
+              </FormField>
             </div>
-          </FormField>
 
-          <FormField label="Assigned To">
-            <Select
-              value={watch('assignedTo')}
-              onValueChange={(value) => setValue('assignedTo', value)}
-            >
-              <SelectTrigger>
-                {users.find(u => u.id === watch('assignedTo'))?.name || 'Select User'}
-              </SelectTrigger>
-              <SelectContent>
-                {users.map(user => (
-                  <SelectItem key={user.id} value={user.id}>
-                    {user.name}
-                  </SelectItem>
+            <FormField label="Status">
+              <Select
+                value={watch('status')}
+                onValueChange={(value: CandidateStatus) => setValue('status', value)}
+              >
+                <SelectTrigger>
+                  {candidateStatuses.find(s => s.value === watch('status'))?.label}
+                </SelectTrigger>
+                <SelectContent>
+                  {candidateStatuses.map(status => (
+                    <SelectItem key={status.value} value={status.value}>
+                      {status.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </FormField>
+
+            <div className="grid grid-cols-2 gap-4">
+              <FormField label="Current Role">
+                <Input {...register('currentRole')} />
+              </FormField>
+
+              <FormField label="Current Company">
+                <Input {...register('currentCompany')} />
+              </FormField>
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <FormField label="Expected Salary">
+                <Input type="number" {...register('expectedSalary')} />
+              </FormField>
+
+              <FormField label="Notice Period">
+                <Input {...register('noticePeriod')} placeholder="e.g., 2 weeks" />
+              </FormField>
+            </div>
+
+            <FormField label="Resume URL">
+              <Input type="url" {...register('resumeUrl')} />
+            </FormField>
+
+            <FormField label="Skills">
+              <div className="space-y-2">
+                {commonSkills.map(skill => (
+                  <label key={skill} className="flex items-center gap-2">
+                    <input
+                      type="checkbox"
+                      checked={watch('skills')?.includes(skill)}
+                      onChange={(e) => {
+                        const currentSkills = watch('skills') || [];
+                        if (e.target.checked) {
+                          setValue('skills', [...currentSkills, skill]);
+                        } else {
+                          setValue('skills', currentSkills.filter(s => s !== skill));
+                        }
+                      }}
+                      className="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
+                    />
+                    <span className="text-sm text-gray-700">{skill}</span>
+                  </label>
                 ))}
-              </SelectContent>
-            </Select>
-          </FormField>
+              </div>
+            </FormField>
 
-          <FormField label="Notes">
-            <textarea
-              {...register('notes')}
-              className="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
-              rows={4}
-            />
-          </FormField>
-        </div>
+            <FormField label="Assigned To">
+              <Select
+                value={watch('assignedTo')}
+                onValueChange={(value) => setValue('assignedTo', value)}
+              >
+                <SelectTrigger>
+                  {users.find(u => u.id === watch('assignedTo'))?.name || 'Select User'}
+                </SelectTrigger>
+                <SelectContent>
+                  {users.map(user => (
+                    <SelectItem key={user.id} value={user.id}>
+                      {user.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </FormField>
 
-        <div className="flex justify-end gap-3">
-          <Button
-            type="button"
-            variant="secondary"
-            onClick={() => onOpenChange(false)}
-          >
-            Cancel
-          </Button>
-          <Button type="submit">
-            {candidate ? 'Update' : 'Create'} Candidate
-          </Button>
-        </div>
-      </form>
+            <FormField label="Notes">
+              <textarea
+                {...register('notes')}
+                className="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                rows={4}
+              />
+            </FormField>
+          </div>
+
+          <div className="flex justify-end gap-3">
+            <Button
+              type="button"
+              variant="secondary"
+              onClick={() => onOpenChange(false)}
+            >
+              Cancel
+            </Button>
+            <Button type="submit">
+              {candidate ? 'Update' : 'Create'} Candidate
+            </Button>
+          </div>
+        </form>
+      )}
     </SlidePanel>
   );
 }

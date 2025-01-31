@@ -438,7 +438,11 @@ export default function OpportunityDetail() {
                 setSelectedCandidate(candidate);
                 setIsCandidateDialogOpen(true);
               }}
-              onDelete={deleteCandidate}
+              onDisassociate={async (id) => {
+                if (confirm('Are you sure you want to remove this candidate from the opportunity?')) {
+                  await updateCandidate(id, { opportunityId: null });
+                }
+              }}
             />
           </Card>
         </div>
@@ -458,7 +462,11 @@ export default function OpportunityDetail() {
         onSubmit={async (data) => {
           if (selectedCandidate) {
             await updateCandidate(selectedCandidate.id, data);
+          } else if (data.id) {
+            // This is an existing candidate being associated
+            await updateCandidate(data.id, { opportunityId: id });
           } else {
+            // This is a new candidate being created
             await createCandidate(data);
           }
           setIsCandidateDialogOpen(false);

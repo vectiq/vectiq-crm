@@ -16,7 +16,6 @@ export function useCandidates(filters?: { opportunityId?: string }) {
     queryKey,
     queryFn: () => getCandidates(filters)
   });
-
   const createMutation = useMutation({
     mutationFn: createCandidate,
     onSuccess: () => {

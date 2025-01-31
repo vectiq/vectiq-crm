@@ -120,3 +120,24 @@ export interface Interaction {
   createdAt: any;
   updatedAt: any;
 }
+
+export type CandidateStatus = 'new' | 'screening' | 'interviewing' | 'offered' | 'accepted' | 'rejected' | 'withdrawn';
+
+export interface Candidate {
+  id: string;
+  name: string;
+  email: string;
+  phone?: string;
+  status: CandidateStatus;
+  currentRole?: string;
+  currentCompany?: string;
+  expectedSalary?: number;
+  noticePeriod?: string;
+  resumeUrl?: string;
+  skills: string[];
+  notes?: string;
+  opportunityId?: string;
+  assignedTo?: string;
+  createdAt: any;
+  updatedAt: any;
+}
