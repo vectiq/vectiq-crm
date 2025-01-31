@@ -17,9 +17,9 @@ import {
 import { InteractionTimeline } from "@/components/interactions/InteractionTimeline";
 import { InteractionDialog } from "@/components/interactions/InteractionDialog";
 import { LoadingScreen } from "@/components/ui/LoadingScreen";
+import { AttachmentUpload } from "@/components/ui/AttachmentUpload";
 import { ArrowLeft, Mail, Phone, Target } from "lucide-react";
 import type { Lead, LeadStatus, InteractionType } from "@/types";
-import { AttachmentUpload } from "@/components/ui/AttachmentUpload";
 
 const leadSources = [
   "Website",
@@ -284,28 +284,24 @@ export default function LeadDetail() {
             />
           </Card>
 
-          <FormField label="Attachments">
+          <Card className="p-6">
             <AttachmentUpload
               entityType="leads" // or "opportunities" or "candidates"
               entityId={id}
-              attachments={formData.attachments}
+              attachments={lead.attachments}
               uploadedBy={currentUser.id}
               onUpload={(attachment) => {
-                setFormData((prev) => ({
-                  ...prev,
-                  attachments: [...(prev.attachments || []), attachment],
-                }));
+                updateLead(id, {
+                  attachments: [...(lead.attachments || []), attachment]
+                });
               }}
               onDelete={(attachment) => {
-                setFormData((prev) => ({
-                  ...prev,
-                  attachments:
-                    prev.attachments?.filter((a) => a.id !== attachment.id) ||
-                    [],
-                }));
+                updateLead(id, {
+                  attachments: lead.attachments?.filter(a => a.id !== attachment.id) || []
+                });
               }}
             />
-          </FormField>
+          </Card>
         </div>
 
         <div className="space-y-6">

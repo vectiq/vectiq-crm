@@ -16,6 +16,7 @@ import { Select, SelectTrigger, SelectContent, SelectItem } from '@/components/u
 import { InteractionTimeline } from '@/components/interactions/InteractionTimeline';
 import { InteractionDialog } from '@/components/interactions/InteractionDialog';
 import { LoadingScreen } from '@/components/ui/LoadingScreen';
+import { AttachmentUpload } from '@/components/ui/AttachmentUpload';
 import { CandidatesTable } from '@/components/candidates/CandidatesTable';
 import { CandidateDialog } from '@/components/candidates/CandidateDialog';
 import { ArrowLeft, Building2, Target, DollarSign } from 'lucide-react';
@@ -342,6 +343,27 @@ export default function OpportunityDetail() {
                 </Button>
                 </div>
               </form>
+            </Card>
+
+            <Card className="p-6">
+              <FormField label="Attachments">
+                <AttachmentUpload
+                  entityType="opportunities"
+                  entityId={id}
+                  attachments={opportunity.attachments}
+                  uploadedBy={currentUser.id}
+                  onUpload={(attachment) => {
+                    updateOpportunity(id, {
+                      attachments: [...(opportunity.attachments || []), attachment]
+                    });
+                  }}
+                  onDelete={(attachment) => {
+                    updateOpportunity(id, {
+                      attachments: opportunity.attachments?.filter(a => a.id !== attachment.id) || []
+                    });
+                  }}
+                />
+              </FormField>
             </Card>
           </div>
 

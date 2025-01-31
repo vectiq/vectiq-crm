@@ -15,6 +15,7 @@ import { TagInput } from '@/components/ui/TagInput';
 import { InteractionTimeline } from '@/components/interactions/InteractionTimeline';
 import { InteractionDialog } from '@/components/interactions/InteractionDialog';
 import { LoadingScreen } from '@/components/ui/LoadingScreen';
+import { AttachmentUpload } from '@/components/ui/AttachmentUpload';
 import { ArrowLeft, UserPlus, Briefcase, ExternalLink } from 'lucide-react';
 import { format } from 'date-fns';
 import { formatCurrency } from '@/lib/utils/currency';
@@ -324,6 +325,27 @@ export default function CandidateDetail() {
                 </Button>
               </div>
             </form>
+          </Card>
+
+          <Card className="p-6">
+            <FormField label="Attachments">
+              <AttachmentUpload
+                entityType="candidates"
+                entityId={id}
+                attachments={candidate.attachments}
+                uploadedBy={currentUser.id}
+                onUpload={(attachment) => {
+                  updateCandidate(id, {
+                    attachments: [...(candidate.attachments || []), attachment]
+                  });
+                }}
+                onDelete={(attachment) => {
+                  updateCandidate(id, {
+                    attachments: candidate.attachments?.filter(a => a.id !== attachment.id) || []
+                  });
+                }}
+              />
+            </FormField>
           </Card>
 
         </div>
