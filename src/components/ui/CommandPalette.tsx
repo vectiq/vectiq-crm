@@ -4,7 +4,6 @@ import { Dialog, Transition } from '@headlessui/react';
 import { Search, Calendar, ChevronRight } from 'lucide-react';
 import { navigationItems } from '@/lib/constants/navigation';
 import { useUsers } from '@/lib/hooks/useUsers';
-import { useProjects } from '@/lib/hooks/useProjects';
 import { useClients } from '@/lib/hooks/useClients';
 import { cn } from '@/lib/utils/styles';
 
@@ -17,7 +16,6 @@ export function CommandPalette({ open, onClose }: CommandPaletteProps) {
   const [query, setQuery] = useState('');
   const navigate = useNavigate();
   const { currentUser } = useUsers();
-  const { projects } = useProjects();
   const { clients } = useClients();
 
   // Filter items based on user role
@@ -37,9 +35,6 @@ export function CommandPalette({ open, onClose }: CommandPaletteProps) {
     : [
         ...allowedItems.filter(item =>
           item.name.toLowerCase().includes(query.toLowerCase())
-        ),
-        ...projects.filter(project =>
-          project.name.toLowerCase().includes(query.toLowerCase())
         ),
         ...clients.filter(client =>
           client.name.toLowerCase().includes(query.toLowerCase())

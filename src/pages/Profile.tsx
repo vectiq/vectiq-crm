@@ -1,6 +1,5 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useUsers } from '@/lib/hooks/useUsers';
-import { useProjects } from '@/lib/hooks/useProjects';
 import { useClients } from '@/lib/hooks/useClients';
 import { auth } from '@/lib/firebase';
 import { Card } from '@/components/ui/Card';
@@ -12,7 +11,6 @@ import { formatCurrency } from '@/lib/utils/currency';
 
 export default function Profile() {
   const { currentUser, updateUser, isUpdating, sendPasswordReset } = useUsers();
-  const { projects } = useProjects();
   const { clients } = useClients();
   const user = auth.currentUser;
   const [name, setName] = useState(currentUser?.name || '');
@@ -22,16 +20,14 @@ export default function Profile() {
   // Get assignments with full details
   const assignments = useMemo(() => {
     return (currentUser?.projectAssignments || []).map(assignment => {
-      const project = projects.find(p => p.id === assignment.projectId);
       const client = clients.find(c => c.id === assignment.clientId);
       
       return {
         id: assignment.id,
         client,
-        project,
       };
-    }).filter(a => a.client && a.project);
-  }, [currentUser?.projectAssignments, projects, clients]);
+    }).filter(a => a.client);
+  }, [currentUser?.projectAssignments,  clients]);
 
   useEffect(() => {
     if (currentUser?.name) {
@@ -136,8 +132,6 @@ export default function Profile() {
                     return (
                       <tr key={assignment.id}>
                         <Td className="font-medium">{assignment.client.name}</Td>
-                        <Td className="font-medium">{assignment.project.name}</Td>
-                        <Td>{assignment.task.name}</Td>
                       </tr>
                     );
                   })}

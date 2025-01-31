@@ -2,7 +2,6 @@ import { Edit, Trash2, Calculator } from 'lucide-react';
 import { Table, TableHeader, TableBody, Th, Td } from '@/components/ui/Table';
 import { Button } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
-import { useProjects } from '@/lib/hooks/useProjects';
 import type { User } from '@/types';
 import { useMemo } from 'react';
 
@@ -19,23 +18,7 @@ export function UsersTable({
   onManageRates,
   onDelete,
 }: UsersTableProps) {
-  const { projects, isLoading: isLoadingProjects } = useProjects();
 
-  // Get all assignments for a user across all projects
-  const getUserAssignments = useMemo(() => (userId: string) => {
-    if (isLoadingProjects || !projects) return [];
-    
-    return projects.flatMap(project => 
-      project.tasks.flatMap(task => 
-        task.userAssignments
-          ?.filter(assignment => assignment.userId === userId)
-          .map(assignment => ({
-            projectName: project.name,
-            taskName: task.name
-          })) || []
-      )
-    );
-  }, [projects, isLoadingProjects]);
   return (
     <Table>
       <TableHeader>
@@ -51,7 +34,6 @@ export function UsersTable({
       </TableHeader>
       <TableBody>
         {users.map((user) => {
-          const assignments = getUserAssignments(user.id);
 
           return (
             <tr key={user.id}>
@@ -69,24 +51,6 @@ export function UsersTable({
                 <Badge variant={user.role === 'admin' ? 'warning' : 'secondary'}>
                   {user.role}
                 </Badge>
-              </Td>
-              <Td>
-                <div className="space-y-2">
-                  {assignments.map((assignment, index) => {
-                    return (
-                      <div key={index} className="flex items-center gap-2 text-sm">
-                        <span className="text-gray-500">{assignment.projectName}</span>
-                        <span className="text-gray-400">-</span>
-                        <span className="text-gray-500">{assignment.taskName}</span>
-                      </div>
-                    );
-                  })}
-                  {assignments.length === 0 && (
-                    <div className="text-sm text-gray-500">
-                      No project assignments
-                    </div>
-                  )}
-                </div>
               </Td>
               <Td className="text-right">
                 <div className="flex justify-end gap-2">

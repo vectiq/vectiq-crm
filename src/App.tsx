@@ -7,7 +7,6 @@ import { LoadingScreen } from '@/components/ui/LoadingScreen';
 import { RoleProtectedRoute } from '@/components/auth/RoleProtectedRoute';
 import { Layout } from '@/components/layout/Layout';
 import Login from '@/pages/Login';
-import Projects from '@/pages/Projects';
 import Clients from '@/pages/Clients';
 import Users from '@/pages/Users';
 import Teams from '@/pages/Teams';
@@ -61,14 +60,6 @@ export default function App() {
             }
           >
             <Route path="profile" element={<Profile />} />
-            <Route
-              path="projects"
-              element={
-                <RoleProtectedRoute allowedRoles={['admin']}>
-                  <Projects />
-                </RoleProtectedRoute>
-              }
-            />
             <Route
               path="clients"
               element={
