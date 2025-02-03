@@ -7,14 +7,10 @@ import { LoadingScreen } from '@/components/ui/LoadingScreen';
 import { RoleProtectedRoute } from '@/components/auth/RoleProtectedRoute';
 import { Layout } from '@/components/layout/Layout';
 import Login from '@/pages/Login';
-import Clients from '@/pages/Clients';
 import CandidateDetail from '@/pages/CandidateDetail';
 import LeadDetail from '@/pages/LeadDetail';
 import OpportunityDetail from '@/pages/OpportunityDetail';
 import Candidates from '@/pages/Candidates';
-import Users from '@/pages/Users';
-import Teams from '@/pages/Teams';
-import Admin from '@/pages/Admin';
 import Profile from '@/pages/Profile';
 import Leads from '@/pages/Leads';
 import Opportunities from '@/pages/Opportunities';
@@ -111,38 +107,6 @@ export default function App() {
               element={
                 <RoleProtectedRoute allowedRoles={['admin']}>
                   <CandidateDetail />
-                </RoleProtectedRoute>
-              }
-            />
-            <Route
-              path="clients"
-              element={
-                <RoleProtectedRoute allowedRoles={['admin']}>
-                  <Clients />
-                </RoleProtectedRoute>
-              }
-            />
-            <Route
-              path="users"
-              element={
-                <RoleProtectedRoute allowedRoles={['admin']}>
-                  <Users />
-                </RoleProtectedRoute>
-              }
-            />
-            <Route
-              path="teams"
-              element={
-                <RoleProtectedRoute allowedRoles={['admin']}>
-                  <Teams />
-                </RoleProtectedRoute>
-              }
-            />
-            <Route
-              path="admin"
-              element={
-                <RoleProtectedRoute allowedRoles={['admin']}>
-                  <Admin />
                 </RoleProtectedRoute>
               }
             />

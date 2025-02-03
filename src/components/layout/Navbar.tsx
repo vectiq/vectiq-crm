@@ -1,9 +1,6 @@
 import { useState, useEffect } from 'react';
 import { MobileNav } from './MobileNav'; 
-import { CommandPalette } from '@/components/ui/CommandPalette';
 import { UserMenu } from './UserMenu';
-import { Command } from 'lucide-react';
-import { Button } from '@/components/ui/Button';
 
 export function Navbar() {
   const [isCommandPaletteOpen, setIsCommandPaletteOpen] = useState(false);
@@ -36,25 +33,14 @@ export function Navbar() {
           </div>
           
           <div className="flex items-center gap-x-4">
-            <Button
-              variant="secondary"
-              onClick={() => setIsCommandPaletteOpen(true)}
-              className="hidden md:flex items-center gap-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-            >
-              <Command className="h-4 w-4" />
-              <span>Quick Actions</span>
-              <kbd className="ml-2 text-xs bg-gray-100 px-2 py-0.5 rounded">⌘K</kbd>
-            </Button>
+    
             <UserMenu />
           </div>
         </div>
       </div>
       </nav>
       
-      <CommandPalette 
-        open={isCommandPaletteOpen}
-        onClose={() => setIsCommandPaletteOpen(false)}
-      />
+      
     </>
   );
 }
