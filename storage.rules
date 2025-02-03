@@ -1,0 +1,71 @@
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+    function isAdmin() {
+      return request.auth != null && 
+             firestore.get(/databases/(default)/documents/users/$(request.auth.uid)).data.role == 'admin';
+    }
+
+    match /leads/{leadId}/{fileName} {
+      allow read: if request.auth != null;
+      allow write: if request.auth != null && (
+        isAdmin() || 
+        firestore.get(/databases/(default)/documents/leads/$(leadId)).data.assignedTo == request.auth.uid
+      );
+    }
+
+    match /opportunities/{opportunityId}/{fileName} {
+      allow read: if request.auth != null;
+      allow write: if request.auth != null && (
+        isAdmin() || 
+        firestore.get(/databases/(default)/documents/opportunities/$(opportunityId)).data.assignedTo == request.auth.uid
+      );
+    }
+
+    match /candidates/{candidateId}/{fileName} {
+      allow read: if request.auth != null;
+      allow write: if request.auth != null && (
+        isAdmin() || 
+        firestore.get(/databases/(default)/documents/candidates/$(candidateId)).data.assignedTo == request.auth.uid
+      );
+    }
+  }
+}
+
+
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+    function isAdmin() {
+      return request.auth != null && 
+             firestore.get(/databases/(default)/documents/users/$(request.auth.uid)).data.role == 'admin';
+    }
+
+    function isAssignedTo(entityId, collection) {
+      return request.auth != null && (
+        isAdmin() ||
+        firestore.get(/databases/(default)/documents/$(collection)/$(entityId)).data.assignedTo == request.auth.uid
+      );
+    }
+
+    // Allow read access to authenticated users
+    match /{allPaths=**} {
+      allow read: if request.auth != null;
+    }
+
+    match /leads/{leadId}/{fileName} {
+      allow write: if isAssignedTo(leadId, "leads");
+      allow delete: if isAssignedTo(leadId, "leads");
+    }
+
+    match /opportunities/{opportunityId}/{fileName} {
+      allow write: if isAssignedTo(opportunityId, "opportunities");
+      allow delete: if isAssignedTo(opportunityId, "opportunities");
+    }
+
+    match /candidates/{candidateId}/{fileName} {
+      allow write: if isAssignedTo(candidateId, "candidates");
+      allow delete: if isAssignedTo(candidateId, "candidates");
+    }
+  }
+}

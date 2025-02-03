@@ -41,6 +41,30 @@ service cloud.firestore {
     	allow read, update: if request.auth != null && request.auth.uid == resource.data.userId;
       allow create;
     }
+    
+    match /interactions/{interactionId} {
+      allow read: if request.auth != null;
+      allow create: if request.auth != null;
+      allow update, delete: if request.auth != null && (
+        request.auth.uid == resource.data.userId || 
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin'
+      );
+    }
+    
+    match /candidates/{candidateId} {
+      allow read: if request.auth != null;
+      allow create: if request.auth != null;
+      allow update, delete: if request.auth != null && (
+        request.auth.uid == resource.data.assignedTo || 
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin'
+      );
+    }
+    
+    match /skills/{skillId} {
+      allow read: if request.auth != null;
+      allow write: if request.auth != null && 
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
+    }
 
     // Allow admins full access to all collections needed for test data
     match /{collection}/{document=**} {
