@@ -13,7 +13,8 @@ import { InteractionTimeline } from '@/components/interactions/InteractionTimeli
 import { InteractionDialog } from '@/components/interactions/InteractionDialog';
 import { LoadingScreen } from '@/components/ui/LoadingScreen';
 import { ArrowLeft, Mail, Phone, Target } from 'lucide-react';
-import type { Lead, LeadStatus, InteractionType } from '@/types';
+import type { Lead, LeadStatus, InteractionType, OpportunityStage } from '@/types';
+import { useOpportunities } from '@/lib/hooks/useOpportunities';
 
 const leadSources = [
   'Website',
@@ -38,6 +39,7 @@ export default function LeadDetail() {
   const { users, currentUser } = useUsers();
   const [isInteractionDialogOpen, setIsInteractionDialogOpen] = useState(false);
   const { interactions, createInteraction } = useInteractions({ leadId: id });
+  const { createOpportunity } = useOpportunities();
   const [formData, setFormData] = useState({
     companyName: '',
     contactName: '',
@@ -91,6 +93,25 @@ export default function LeadDetail() {
       leadId: id,
     });
   };
+
+  const convertToOpportunity = async () => {
+    const convertedOpportunity = {
+      leadId: lead.id,
+      title: lead.companyName,
+      stage: 'discovery' as OpportunityStage,
+      assignedTo: lead.assignedTo,
+      notes: lead.notes,
+      value: 0,
+      probability: 0,
+      expectedCloseDate: '',
+    };
+    try {
+      const opportunity = await createOpportunity(convertedOpportunity);
+      navigate(`/opportunities/${opportunity.id}`);
+    } catch (error) {
+      console.error('Error converting to opportunity:', error);
+    }
+  }
 
   if (!lead) {
     return <LoadingScreen />;
@@ -252,7 +273,7 @@ export default function LeadDetail() {
                 <Phone className="h-4 w-4 mr-2" />
                 Log Call
               </Button>
-              <Button className="w-full justify-start" variant="secondary">
+              <Button className="w-full justify-start" variant="secondary" onClick={() => convertToOpportunity()}>
                 <Target className="h-4 w-4 mr-2" />
                 Convert to Opportunity
               </Button>

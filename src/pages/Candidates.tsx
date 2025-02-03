@@ -170,7 +170,7 @@ export default function Candidates() {
                       <Button variant="secondary" size="sm" onClick={() => handleEdit(candidate)}>
                         Edit
                       </Button>
-                      <Button variant="secondary" size="sm" onClick={() => handleDelete(candidate.id)}>
+                      <Button variant="secondary" size="sm" onClick={(event) => {event.stopPropagation(); handleDelete(candidate.id);}}>
                         Delete
                       </Button>
                     </div>

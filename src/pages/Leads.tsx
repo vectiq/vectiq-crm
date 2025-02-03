@@ -209,7 +209,7 @@ export default function Leads() {
                       <Button variant="secondary" size="sm" onClick={() => handleEdit(lead)}>
                         <Edit className="h-4 w-4" />
                       </Button>
-                      <Button variant="secondary" size="sm" onClick={() => handleDelete(lead.id)}>
+                      <Button variant="secondary" size="sm" onClick={(event) => {event.stopPropagation(); handleDelete(lead.id);}}>
                         <Trash2 className="h-4 w-4 text-red-500" />
                       </Button>
                     </div>

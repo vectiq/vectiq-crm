@@ -229,7 +229,7 @@ export default function Opportunities() {
                       <Button variant="secondary" size="sm" onClick={() => handleEdit(opportunity)}>
                         <Edit className="h-4 w-4" />
                       </Button>
-                      <Button variant="secondary" size="sm" onClick={() => handleDelete(opportunity.id)}>
+                      <Button variant="secondary" size="sm" onClick={(event) => {event.stopPropagation(); handleDelete(opportunity.id);}}>
                         <Trash2 className="h-4 w-4 text-red-500" />
                       </Button>
                     </div>
